@@ -7,5 +7,5 @@ test num:
 build_release:
  cargo build --release
 
-bench num:
-  hyperfine --warmup 5 ./target/release/day_{{num}}
+bench num: build_release
+  hyperfine --warmup 5 --shell=none ./target/release/day_{{num}}

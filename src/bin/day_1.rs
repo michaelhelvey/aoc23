@@ -2,6 +2,7 @@ use color_eyre::Result;
 use rayon::prelude::*;
 
 fn main() -> Result<()> {
+    color_eyre::install()?;
     let input = include_str!("../../input/day_1.txt").trim();
 
     println!("sum of part 1: {}", get_puzzle_result(input, false));

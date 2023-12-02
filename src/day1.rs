@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 // We once again skip Rust's (normally useful) string complexity by considering every input to be a
 // just a slice of u8's.
 fn bytewise_compare(first: &[u8], last: &[u8]) -> bool {
