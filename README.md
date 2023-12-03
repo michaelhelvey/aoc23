@@ -14,8 +14,7 @@ by running `cargo t --bin day_2`.
 
 You can run benchmarks against any given day by running `just bench {num}`.
 
-#### What on earth is going on with the file structure?
+#### Notes
 
-idk man. I wanted to have a binary for each day but not be restricted to writing all the code for
-every day in a single file. The naming convention is super fucked though I agree, I'm just
-"embracing the choas" (iykyk).
+Day 3 was really embarassing. I didn't have time / focus to do anything well so 500 million loops it
+is I guess.
