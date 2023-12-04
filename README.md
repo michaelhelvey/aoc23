@@ -16,5 +16,11 @@ You can run benchmarks against any given day by running `just bench {num}`.
 
 #### Notes
 
-Day 3 was really embarassing. I didn't have time / focus to do anything well so 500 million loops it
-is I guess.
+- day 1. easy once I realized I needed to use a two pointer approach instead of iterating from the
+  beginning
+- day 2. easy, mostly just string parsing. nom FTW
+- day 3. yuck. Simple conceptually but I wasted a bunch of time trying to find clever abstractions
+  for it and the code shows it -- its a mess of half-baked ideas, none of which are very good. the
+  answer is right tho.
+- day 4. the recursive solution was easy...there's probably a much faster DP solution but I have day
+  job
