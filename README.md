@@ -22,5 +22,5 @@ You can run benchmarks against any given day by running `just bench {num}`.
 - day 3. yuck. Simple conceptually but I wasted a bunch of time trying to find clever abstractions
   for it and the code shows it -- its a mess of half-baked ideas, none of which are very good. the
   answer is right tho.
-- day 4. the recursive solution was easy...there's probably a much faster DP solution but I have day
-  job
+- day 4. the recursive solution was easy...there's probably a much faster DP solution but I have a
+  day job
