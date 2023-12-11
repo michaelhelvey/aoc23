@@ -77,8 +77,6 @@ pub fn solve_part_2(input: &str) -> u64 {
         .map(|(key, _)| *key)
         .collect();
 
-    println!("Found {} nodes that start with A", nodes.len());
-
     // Store the number of steps it takes to get each node to Z:
     let mut state: HashMap<&str, u64> = HashMap::new();
 
@@ -117,12 +115,11 @@ pub fn solve_part_2(input: &str) -> u64 {
     // they "lineup" when they all divide evenly into the same number of steps:
     // this is just the least common multiple of all the steps
     let nums: Vec<_> = state.values().copied().collect();
-    least_common_multiple(nums)
+    lcm(nums)
 }
 
-fn least_common_multiple(nums: Vec<u64>) -> u64 {
-    let result: u64 = nums.iter().fold(1, |acc, &num| acc * num / gcd(acc, num));
-    result
+fn lcm(nums: Vec<u64>) -> u64 {
+    nums.iter().fold(1, |acc, &num| acc * num / gcd(acc, num))
 }
 
 fn gcd(a: u64, b: u64) -> u64 {
