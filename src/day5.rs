@@ -319,8 +319,8 @@ pub fn find_lowest_location_for_seed_ranges(input: &str) -> u64 {
         .get(&("humidity", "location"))
         .unwrap()
         .iter()
-        .map(|(dest, _, _)| *dest)
-        .collect::<Vec<u64>>();
+        .map(|(dest, _, range)| (*dest, *dest + range - 1))
+        .collect::<Vec<(u64, u64)>>();
 
     locations.sort();
 
@@ -328,13 +328,17 @@ pub fn find_lowest_location_for_seed_ranges(input: &str) -> u64 {
 
     // This is a great idea if this was actually a valid list of locations...somehow I have to
     // figure out a (small) list of valid locations to check.
-    for location in locations {
-        let maybe_seed_value = processor.get_maybe_seed_for_location(location);
-        if let Some(_) = processor
-            .search_for_idx_in_sorted_ranges(&processor.sorted_seed_ranges, maybe_seed_value)
-        {
-            result = Some(location);
-            break;
+    for (start, end) in locations {
+        for x in start..=end {
+            let location = x;
+            let maybe_seed_value = processor.get_maybe_seed_for_location(location);
+            if let Some(_) = processor
+                .search_for_idx_in_sorted_ranges(&processor.sorted_seed_ranges, maybe_seed_value)
+            {
+                println!("seed {}, location {}", maybe_seed_value, location);
+                result = Some(location);
+                break;
+            }
         }
     }
 

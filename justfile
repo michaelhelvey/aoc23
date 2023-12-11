@@ -1,5 +1,5 @@
 day num:
-  cargo run --bin day_{{num}}
+  cargo run --release --bin day_{{num}}
 
 build_release:
  cargo build --release
