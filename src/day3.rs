@@ -60,6 +60,12 @@ pub struct Grid {
     rows: Vec<Row>,
 }
 
+impl Default for Grid {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Grid {
     pub fn new() -> Self {
         Self { rows: Vec::new() }
@@ -130,11 +136,9 @@ impl Grid {
             let mut col = start_col;
 
             while col < end.column + 2 {
-                match self.get((row, col).into()) {
-                    Some(Token::Symbol(_)) => {
-                        return true;
-                    }
-                    _ => (),
+                let token = self.get((row, col).into());
+                if let Some(Token::Symbol(_)) = token {
+                    return true;
                 }
 
                 col += 1;
@@ -166,18 +170,16 @@ impl Grid {
 
             while col < loc.column + 2 {
                 let token = self.get((row, col).into());
-                match token {
-                    Some(Token::Number(number)) => {
-                        if !seen.contains(&number.id) {
-                            found_numbers.push(number.value);
-                            seen.insert(number.id);
-                        }
 
-                        if found_numbers.len() > 2 {
-                            return 0; // fast path
-                        }
+                if let Some(Token::Number(number)) = token {
+                    if !seen.contains(&number.id) {
+                        found_numbers.push(number.value);
+                        seen.insert(number.id);
                     }
-                    _ => (),
+
+                    if found_numbers.len() > 2 {
+                        return 0; // fast path
+                    }
                 }
 
                 col += 1;
@@ -187,7 +189,7 @@ impl Grid {
         }
 
         if found_numbers.len() == 2 {
-            let first = found_numbers.get(0).unwrap();
+            let first = found_numbers.first().unwrap();
             let second = found_numbers.get(1).unwrap();
 
             return first * second;
@@ -254,7 +256,7 @@ fn tokenize_line(row: usize, num_token_id: &mut u32, line: &str) -> Vec<Token> {
         if let Some(current_digit) = c.to_digit(10) {
             let mut current_value: u32 = 0;
             let start_coord: Location = (row, col).into();
-            let mut end_coord: Location = start_coord.clone();
+            let mut end_coord: Location = start_coord;
 
             current_value = (current_value * 10) + current_digit;
 
@@ -363,10 +365,7 @@ mod tests {
 
         let grid = Grid::from_input(input);
         assert!(grid.has_adjacent_symbol((1, 3).into(), (1, 5).into()));
-        assert_eq!(
-            grid.has_adjacent_symbol((0, 3).into(), (0, 5).into()),
-            false
-        );
+        assert!(!grid.has_adjacent_symbol((0, 3).into(), (0, 5).into()));
         assert!(grid.has_adjacent_symbol((3, 6).into(), (3, 8).into()));
         assert!(grid.has_adjacent_symbol((5, 5).into(), (5, 7).into()));
     }

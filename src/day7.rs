@@ -2,6 +2,7 @@ use nom::character::complete::{alphanumeric1, newline, space1, u64};
 use nom::multi::separated_list1;
 use nom::sequence::separated_pair;
 use nom::IResult;
+use std::cmp::Ordering;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -102,9 +103,7 @@ impl HandType {
             state.remove(&'J');
         }
 
-        let result = Self::hand_type_from_state(&state);
-
-        result
+        Self::hand_type_from_state(&state)
     }
 }
 
@@ -115,7 +114,7 @@ struct GameEntry<'a> {
     typ: HandType,
 }
 
-fn parse_hand_line<'a>(input: &'a str) -> IResult<&'a str, GameEntry<'a>> {
+fn parse_hand_line(input: &str) -> IResult<&str, GameEntry<'_>> {
     let (input, (hand, bid)) = separated_pair(alphanumeric1, space1, u64)(input)?;
 
     Ok((
@@ -128,7 +127,7 @@ fn parse_hand_line<'a>(input: &'a str) -> IResult<&'a str, GameEntry<'a>> {
     ))
 }
 
-fn parse_hand_line_part2<'a>(input: &'a str) -> IResult<&'a str, GameEntry<'a>> {
+fn parse_hand_line_part2(input: &str) -> IResult<&str, GameEntry<'_>> {
     let (input, (hand, bid)) = separated_pair(alphanumeric1, space1, u64)(input)?;
 
     Ok((
@@ -141,43 +140,43 @@ fn parse_hand_line_part2<'a>(input: &'a str) -> IResult<&'a str, GameEntry<'a>> 
     ))
 }
 
-fn parse_input<'a>(input: &'a str) -> IResult<&'a str, Vec<GameEntry<'a>>> {
+fn parse_input(input: &str) -> IResult<&str, Vec<GameEntry<'_>>> {
     separated_list1(newline, parse_hand_line)(input)
 }
 
-fn parse_input_part2<'a>(input: &'a str) -> IResult<&'a str, Vec<GameEntry<'a>>> {
+fn parse_input_part2(input: &str) -> IResult<&str, Vec<GameEntry<'_>>> {
     separated_list1(newline, parse_hand_line_part2)(input)
 }
 
-fn get_winnings<'a>(entries: &mut Vec<GameEntry<'a>>, scores: &HashMap<char, u64>) -> u64 {
+fn get_winnings(entries: &mut [GameEntry<'_>], scores: &HashMap<char, u64>) -> u64 {
     entries.sort_by(|a, b| {
-        if (a.typ as usize) > (b.typ as usize) {
-            std::cmp::Ordering::Less
-        } else if (a.typ as usize) < (b.typ as usize) {
-            std::cmp::Ordering::Greater
-        } else {
-            // if they are equal, then the "secondary" sorting rule applies where we have to walk
-            // down the characters
-            let mut idx = 0;
+        match (a.typ as usize).cmp(&(b.typ as usize)) {
+            Ordering::Greater => Ordering::Less,
+            Ordering::Less => Ordering::Greater,
+            Ordering::Equal => {
+                // if they are equal, then the "secondary" sorting rule applies where we have to walk
+                // down the characters
+                let mut idx = 0;
 
-            loop {
-                if idx == 5 {
-                    panic!("lol");
-                }
+                loop {
+                    if idx == 5 {
+                        panic!("lol");
+                    }
 
-                let a_char = a.hand.chars().nth(idx).unwrap();
-                let b_char = b.hand.chars().nth(idx).unwrap();
+                    let a_char = a.hand.chars().nth(idx).unwrap();
+                    let b_char = b.hand.chars().nth(idx).unwrap();
 
-                let ordering = scores
-                    .get(&a_char)
-                    .unwrap()
-                    .cmp(scores.get(&b_char).unwrap());
+                    let ordering = scores
+                        .get(&a_char)
+                        .unwrap()
+                        .cmp(scores.get(&b_char).unwrap());
 
-                match ordering {
-                    std::cmp::Ordering::Less => return std::cmp::Ordering::Less,
-                    std::cmp::Ordering::Greater => return std::cmp::Ordering::Greater,
-                    std::cmp::Ordering::Equal => {
-                        idx += 1;
+                    match ordering {
+                        std::cmp::Ordering::Less => return std::cmp::Ordering::Less,
+                        std::cmp::Ordering::Greater => return std::cmp::Ordering::Greater,
+                        std::cmp::Ordering::Equal => {
+                            idx += 1;
+                        }
                     }
                 }
             }
@@ -238,7 +237,7 @@ pub fn solve_part_2(input: &str) -> u64 {
 mod tests {
     use super::*;
 
-    const INPUT: &'static str = r#"
+    const INPUT: &str = r#"
 32T3K 765
 T55J5 684
 KK677 28

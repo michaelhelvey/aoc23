@@ -1,4 +1,4 @@
-use std::{ascii::AsciiExt, collections::HashMap};
+use std::collections::HashMap;
 
 use nom::{
     bytes::complete::tag,
@@ -14,7 +14,7 @@ struct Instructions<'a> {
     map: HashMap<&'a str, (&'a str, &'a str)>,
 }
 
-fn parse_key_value_line<'a>(input: &'a str) -> IResult<&'a str, (&'a str, (&'a str, &'a str))> {
+fn parse_key_value_line(input: &str) -> IResult<&str, (&str, (&str, &str))> {
     let (input, key) = alphanumeric1(input)?;
     let (input, _) = tag(" = (")(input)?;
     let (input, (first, second)) = separated_pair(alphanumeric1, tag(", "), alphanumeric1)(input)?;
@@ -23,7 +23,7 @@ fn parse_key_value_line<'a>(input: &'a str) -> IResult<&'a str, (&'a str, (&'a s
     Ok((input, (key, (first, second))))
 }
 
-fn parse_input<'a>(input: &'a str) -> IResult<&'a str, Instructions<'a>> {
+fn parse_input(input: &str) -> IResult<&str, Instructions<'_>> {
     let (input, first_line) = alpha1(input)?;
     let directions = first_line.chars().collect::<Vec<char>>();
 
@@ -116,7 +116,7 @@ pub fn solve_part_2(input: &str) -> u64 {
 
     // they "lineup" when they all divide evenly into the same number of steps:
     // this is just the least common multiple of all the steps
-    let nums: Vec<_> = state.values().map(|x| *x).collect();
+    let nums: Vec<_> = state.values().copied().collect();
     least_common_multiple(nums)
 }
 
@@ -137,7 +137,7 @@ fn gcd(a: u64, b: u64) -> u64 {
 mod tests {
     use super::*;
 
-    const INPUT: &'static str = r#"
+    const INPUT: &str = r#"
 RL
 
 AAA = (BBB, CCC)

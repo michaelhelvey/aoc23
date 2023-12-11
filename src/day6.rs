@@ -12,8 +12,8 @@ fn parse_input(input: &str) -> IResult<&str, Vec<(u64, u64)>> {
     let (input, distances) = separated_list1(space1, u64)(input)?;
     let times_distances: Vec<(u64, u64)> = times
         .iter()
-        .map(|x| *x)
-        .zip(distances.iter().map(|x| *x))
+        .copied()
+        .zip(distances.iter().copied())
         .collect();
 
     Ok((input, times_distances))
@@ -21,7 +21,7 @@ fn parse_input(input: &str) -> IResult<&str, Vec<(u64, u64)>> {
 
 /// Parses a single integer from the input, e.g. given "123" will return "1" as a u64.
 fn parse_single_integer(input: &str) -> IResult<&str, u64> {
-    let (input, digit) = map_res(take(1 as usize), |c: &str| c.parse::<u64>())(input)?;
+    let (input, digit) = map_res(take(1_usize), |c: &str| c.parse::<u64>())(input)?;
     Ok((input, digit))
 }
 
@@ -37,7 +37,7 @@ fn parse_input_part_2(input: &str) -> IResult<&str, Vec<(u64, u64)>> {
     Ok((input, vec![(time, distance)]))
 }
 
-fn get_num_ways_to_solve(races: &Vec<(u64, u64)>) -> u64 {
+fn get_num_ways_to_solve(races: &[(u64, u64)]) -> u64 {
     let mut final_result: u64 = 1;
 
     for (time, record_distance) in races.iter() {
@@ -95,7 +95,7 @@ pub fn solve_part_2(input: &str) -> u64 {
 mod tests {
     use super::*;
 
-    const INPUT: &'static str = r#"
+    const INPUT: &str = r#"
 Time:      7  15   30
 Distance:  9  40  200
         "#;

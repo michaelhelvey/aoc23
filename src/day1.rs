@@ -14,7 +14,7 @@ fn bytewise_compare(first: &[u8], last: &[u8]) -> bool {
     true
 }
 
-const LOOKUPS: [(&'static str, u32); 9] = [
+const LOOKUPS: [(&str, u32); 9] = [
     ("one", 1),
     ("two", 2),
     ("three", 3),
@@ -37,7 +37,7 @@ fn find_digit_str_forwards(input: &[u8]) -> Option<u32> {
             continue;
         }
 
-        if bytewise_compare(&comp.as_bytes(), &input[..comp.len()]) {
+        if bytewise_compare(comp.as_bytes(), &input[..comp.len()]) {
             return Some(val);
         }
     }
@@ -56,7 +56,7 @@ fn find_digit_str_backwards(input: &[u8]) -> Option<u32> {
             continue;
         }
 
-        if bytewise_compare(&comp.as_bytes(), &input[(input.len() - comp.len())..]) {
+        if bytewise_compare(comp.as_bytes(), &input[(input.len() - comp.len())..]) {
             return Some(val);
         }
     }
@@ -66,7 +66,7 @@ fn find_digit_str_backwards(input: &[u8]) -> Option<u32> {
 
 /// Two-pointer approach for finding the first and last digits in a string.
 pub fn find_first_last(input: &'static str, recognize_strs: bool) -> Option<(u32, u32)> {
-    if input.len() == 0 {
+    if input.is_empty() {
         return None;
     }
     // because we only have to process ASCII characters, we can skip the whole UTF-8 codepoints
@@ -191,6 +191,6 @@ mod tests {
     fn test_bytewise_compare_forwards() {
         let input_str = "abcone923";
         let first_slice = &input_str.as_bytes()[3..6];
-        assert_eq!(bytewise_compare(first_slice, "one".as_bytes()), true);
+        assert!(bytewise_compare(first_slice, "one".as_bytes()));
     }
 }

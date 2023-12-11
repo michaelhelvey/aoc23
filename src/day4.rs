@@ -41,7 +41,7 @@ fn win_card(
     win_count: u32,
     cards: &Vec<(u32, u32)>,
     store: &mut HashMap<u32, u32>,
-    depth: u32,
+    _depth: u32,
 ) {
     // Increment the number of wins for that card
     store
@@ -56,7 +56,7 @@ fn win_card(
             "AOC promised me that it will never make me copy a card past the end of the table",
         );
 
-        win_card(*next_card_id, i, *next_win_count, cards, store, depth + 1);
+        win_card(*next_card_id, i, *next_win_count, cards, store, _depth + 1);
     }
 }
 
@@ -89,11 +89,10 @@ pub fn sum_winning_scores(input: &str) -> u32 {
 
             let win_count = count_winning_numbers(winning, has);
 
-            let result = match win_count {
+            match win_count {
                 0 => 0,
                 _ => 1 << (win_count - 1),
-            };
-            result
+            }
         })
         .sum()
 }

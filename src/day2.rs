@@ -107,7 +107,7 @@ pub fn find_possible_games(input: &str) -> usize {
                 }
             }
 
-            return game.id;
+            game.id
         })
         .sum()
 }
