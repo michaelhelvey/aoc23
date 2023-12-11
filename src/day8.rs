@@ -1,14 +1,10 @@
-use std::{
-    collections::{HashMap, HashSet},
-    rc::Rc,
-};
+use std::{ascii::AsciiExt, collections::HashMap};
 
-use color_eyre::owo_colors::colors::xterm::VistaBlue;
 use nom::{
     bytes::complete::tag,
     character::complete::{alpha1, alphanumeric1, newline},
     multi::separated_list1,
-    sequence::{separated_pair, tuple},
+    sequence::separated_pair,
     IResult,
 };
 
@@ -40,56 +36,6 @@ fn parse_input<'a>(input: &'a str) -> IResult<&'a str, Instructions<'a>> {
     Ok((input, instructions))
 }
 
-fn get_left(key: &'static str, instructions: &Instructions<'static>) -> Option<&'static str> {
-    let (left, _) = instructions.map.get(key).unwrap();
-    Some(left)
-}
-
-fn get_right(key: &'static str, instructions: &Instructions<'static>) -> Option<&'static str> {
-    let (_, right) = instructions.map.get(key).unwrap();
-    Some(right)
-}
-
-pub fn solve_part_2(input: &'static str) -> u64 {
-    let (_, instructions) = parse_input(input.trim()).unwrap();
-
-    let mut nodes: Vec<&str> = instructions
-        .map
-        .iter()
-        .filter(|(key, _)| key.ends_with('A'))
-        .map(|(key, _)| *key)
-        .collect();
-
-    let mut steps = 0;
-    let mut direction_idx = 0;
-
-    loop {
-        if direction_idx == instructions.directions.len() {
-            direction_idx = 0;
-        }
-
-        let direction = instructions.directions[direction_idx];
-
-        if nodes.iter().all(|node| node.ends_with('Z')) {
-            return steps;
-        }
-
-        for idx in 0..nodes.len() {
-            let node = nodes[idx];
-            let next_node = match direction {
-                'R' => get_right(&node, &instructions).unwrap(),
-                'L' => get_left(&node, &instructions).unwrap(),
-                _ => panic!("Unknown direction: {}", direction),
-            };
-
-            nodes[idx] = next_node;
-        }
-
-        direction_idx += 1;
-        steps += 1;
-    }
-}
-
 pub fn solve_part_1(input: &str) -> u64 {
     let (_, instructions) = parse_input(input.trim()).unwrap();
 
@@ -117,6 +63,73 @@ pub fn solve_part_1(input: &str) -> u64 {
 
         direction_idx += 1;
         steps += 1;
+    }
+}
+
+pub fn solve_part_2(input: &str) -> u64 {
+    let (_, instructions) = parse_input(input.trim()).unwrap();
+
+    // All nodes that start with A:
+    let nodes: Vec<&str> = instructions
+        .map
+        .iter()
+        .filter(|(key, _)| key.ends_with('A'))
+        .map(|(key, _)| *key)
+        .collect();
+
+    println!("Found {} nodes that start with A", nodes.len());
+
+    // Store the number of steps it takes to get each node to Z:
+    let mut state: HashMap<&str, u64> = HashMap::new();
+
+    for node in nodes {
+        let mut steps = 0;
+        let mut current_node = node;
+
+        let mut direction_idx = 0;
+
+        loop {
+            if current_node.ends_with('Z') {
+                break;
+            }
+
+            if direction_idx == instructions.directions.len() {
+                direction_idx = 0;
+            }
+
+            let direction = instructions.directions[direction_idx];
+
+            let (left, right) = instructions.map.get(current_node).unwrap();
+
+            current_node = match direction {
+                'R' => right,
+                'L' => left,
+                _ => panic!("Unknown direction: {}", direction),
+            };
+
+            steps += 1;
+            direction_idx += 1;
+        }
+
+        state.insert(node, steps);
+    }
+
+    // they "lineup" when they all divide evenly into the same number of steps:
+    // this is just the least common multiple of all the steps
+    let nums: Vec<_> = state.values().map(|x| *x).collect();
+    least_common_multiple(nums)
+}
+
+fn least_common_multiple(nums: Vec<u64>) -> u64 {
+    let result: u64 = nums.iter().fold(1, |acc, &num| acc * num / gcd(acc, num));
+    result
+}
+
+fn gcd(a: u64, b: u64) -> u64 {
+    if b == 0 {
+        a
+    } else {
+        gcd(b, a % b)
     }
 }
 
