@@ -1,0 +1,4 @@
+fn main() {
+    let input = include_str!("../../input/day_{{day}}.txt");
+    println!("Part 1: {}", aoc::day{{day}}::solve_part_1(input));
+}

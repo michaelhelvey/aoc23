@@ -1,0 +1,13 @@
+pub fn solve_part_1(input: &str) -> u64 {
+    todo!()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_input() {
+        todo!()
+    }
+}
